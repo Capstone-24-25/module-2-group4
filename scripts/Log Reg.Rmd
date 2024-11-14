@@ -1,0 +1,71 @@
+---
+title: "Log Reg"
+output: html_document
+date: "2024-11-14"
+---
+
+```{r}
+library(conflicted)
+library(tidyverse)
+library(tidytext)
+library(textstem)
+library(rvest)
+library(qdapRegex)
+library(stopwords)
+library(tokenizers)
+library(tidymodels)
+tidymodels_prefer()
+```
+
+```{r}
+load('data/claims-clean-task-1.RData')
+```
+
+```{r}
+data = claims_clean %>%
+  select(c(.id, bclass, text_clean, heading_clean)) %>%
+  mutate(.id = factor(.id))
+
+data_heading = data %>%
+  unnest_tokens(word, heading_clean) %>%
+  anti_join(stop_words) %>%
+  select(-text_clean) %>%
+  group_by(.id, bclass) %>%
+  count(word)
+
+data_text = data %>%
+  unnest_tokens(word, text_clean) %>%
+  anti_join(stop_words) %>%
+  select(-heading_clean) %>%
+  group_by(.id, bclass) %>%
+  count(word)
+
+data_heading_wide = data_heading %>%
+  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  replace(is.na(.), 0)
+
+data_text_wide = data_text %>%
+  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  replace(is.na(.), 0)
+
+data_wide = full_join(data_heading_wide, data_text_wide, by = join_by(.id), multiple = 'all', keep = TRUE, relationship = 'one-to-one') %>%
+  drop_na() %>%
+  select(-.id.x)
+```
+
+```{r}
+set.seed(1000)
+all_split = initial_split(data_wide, prop = 0.7, strata = bclass.x)
+all_train = training(all_split)
+all_test = testing(all_split)
+```
+
+```{r}
+data_recipe = recipe(bclass.x ~ ., 
+                        data = all_train) %>%
+  step_pca(all_numeric(), threshold = .75)
+
+prep(data_recipe) %>%
+  bake(new_data = all_train)
+
+```
