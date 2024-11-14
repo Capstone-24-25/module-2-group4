@@ -14,6 +14,7 @@ library(qdapRegex)
 library(stopwords)
 library(tokenizers)
 library(tidymodels)
+library(sparsesvd)
 tidymodels_prefer()
 ```
 
@@ -29,6 +30,7 @@ data = claims_clean %>%
 data_heading = data %>%
   unnest_tokens(word, heading_clean) %>%
   anti_join(stop_words) %>%
+  lemmatize_words() %>%
   select(-text_clean) %>%
   group_by(.id, bclass) %>%
   count(word)
@@ -36,6 +38,7 @@ data_heading = data %>%
 data_text = data %>%
   unnest_tokens(word, text_clean) %>%
   anti_join(stop_words) %>%
+  lemmatize_words() %>%
   select(-heading_clean) %>%
   group_by(.id, bclass) %>%
   count(word)
@@ -63,9 +66,29 @@ all_test = testing(all_split)
 ```{r}
 data_recipe = recipe(bclass.x ~ ., 
                         data = all_train) %>%
-  step_pca(all_numeric(), threshold = .75)
+  step_normalize(all_numeric_predictors())
+  #step_pca(all_numeric(), threshold = .75)
 
 prep(data_recipe) %>%
   bake(new_data = all_train)
 
+```
+
+```{r}
+test <- data_wide %>% 
+  select(-bclass.x) %>%
+  as.matrix() %>%
+  as('sparseMatrix') 
+
+start <- Sys.time()
+svd_out <- sparsesvd(test)
+end <- Sys.time()
+time_ssvd <- end - start
+
+start <- Sys.time()
+prcomp_out <- prcomp(test, center = T)
+end <- Sys.time()
+time_prcomp <- end - start
+
+time_prcomp - time_ssvd
 ```
