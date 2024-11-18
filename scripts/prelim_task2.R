@@ -52,17 +52,45 @@ pca_workflow <- workflow() |>
   add_recipe(recipe) |> 
   add_model(logistic_model)
 
-# fitting the model
+# fitting the first model
 pca_fit <- pca_workflow |> 
   fit(data = stoken_train)
 
-# evaluate the model on testing
-pca_pred <- predict(pca_fit, stoken_test, type = "prob") |> 
+# extract predicted log-odds-ratios
+pca_pred <- predict(pca_fit, stoken_test, type = "link") |> 
   bind_cols(stoken_test)
 
-# metrics to use for evaluation
-metrics <- metric_set(roc_auc, accuracy, precision, sensitivity, sensitivity)
-eval_metrics <- metrics(pca_pred, truth = bclass, estimate = .pred_class)
+# combine log-odds-ratios with principal components
+combined_data <- pca_pred |> 
+  select(.pred_link, starts_with("PC")) # assuming PCs are named like "PC1", "PC2"
 
-# Print metrics
-print(eval_metrics)
+# fit a second logistic regression model
+second_logistic_model <- logistic_reg(mode = "classification") |> 
+  set_engine("glmnet")
+
+second_workflow <- workflow() |> 
+  add_formula(bclass ~ .) |> 
+  add_model(second_logistic_model)
+
+second_fit <- second_workflow |> 
+  fit(data = combined_data)
+
+# metrics to use for evaluation
+metrics <- metric_set(roc_auc, accuracy, precision, sensitivity)
+
+# Ensure predictions are converted to class labels
+pca_pred_class <- predict(pca_fit, stoken_test, type = "class") |> 
+  bind_cols(stoken_test)
+
+# metrics for the first model
+eval_metrics <- metrics(pca_pred_class, truth = bclass, estimate = .pred_class)
+
+# Ensure predictions are converted to class labels for the second model
+second_pred_class <- predict(second_fit, combined_data, type = "class") |> 
+  bind_cols(combined_data)
+
+# metrics for the second model
+second_eval_metrics <- metrics(second_pred_class, truth = bclass, estimate = .pred_class)
+
+# Print metrics for the second model
+print(second_eval_metrics)
