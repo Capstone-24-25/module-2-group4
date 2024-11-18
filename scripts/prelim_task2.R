@@ -40,6 +40,7 @@ stoken_test <- testing(partitions) |> mutate(bclass = as.factor(bclass))
 ##### fit logistic pcr model to tokenized data (bigrams) #####
 # preprocess data
 recipe <- recipe(bclass ~. , data = stoken_train) |> 
+  step_zv(all_predictors()) |>
   step_normalize(all_numeric_predictors()) |> 
   step_pca(all_numeric(), num_comp = 10) # adjust num_comp
 
@@ -62,7 +63,7 @@ pca_pred <- predict(pca_fit, stoken_test, type = "link") |>
 
 # combine log-odds-ratios with principal components
 combined_data <- pca_pred |> 
-  select(.pred_link, starts_with("PC")) # assuming PCs are named like "PC1", "PC2"
+  select(.pred_link, starts_with("PC")) # assuming PCs are named like "PC1", "PC2", etc.
 
 # fit a second logistic regression model
 second_logistic_model <- logistic_reg(mode = "classification") |> 
@@ -75,22 +76,12 @@ second_workflow <- workflow() |>
 second_fit <- second_workflow |> 
   fit(data = combined_data)
 
-# metrics to use for evaluation
-metrics <- metric_set(roc_auc, accuracy, precision, sensitivity)
-
-# Ensure predictions are converted to class labels
-pca_pred_class <- predict(pca_fit, stoken_test, type = "class") |> 
-  bind_cols(stoken_test)
-
-# metrics for the first model
-eval_metrics <- metrics(pca_pred_class, truth = bclass, estimate = .pred_class)
-
-# Ensure predictions are converted to class labels for the second model
-second_pred_class <- predict(second_fit, combined_data, type = "class") |> 
+# evaluate the second model
+second_pred <- predict(second_fit, combined_data, type = "prob") |> 
   bind_cols(combined_data)
 
 # metrics for the second model
-second_eval_metrics <- metrics(second_pred_class, truth = bclass, estimate = .pred_class)
+second_eval_metrics <- metrics(second_pred, truth = bclass, estimate = .pred_class)
 
 # Print metrics for the second model
 print(second_eval_metrics)
