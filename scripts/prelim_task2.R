@@ -7,7 +7,7 @@ library(tidytext)
 library(stopwords)
 library(textstem)
 
-# secondary tokenization of data to obtain bigrams
+# secondary tokenization of data to obtain bigrams with stop words
 load('claims-clean-example.Rdata')
 stoken <- claims_clean %>%
   mutate(text_clean = str_trim(text_clean)) %>%
@@ -38,10 +38,11 @@ stoken_train <- training(partitions) |> mutate(bclass = as.factor(bclass))
 stoken_test <- testing(partitions) |> mutate(bclass = as.factor(bclass))
 
 ##### fit logistic pcr model to tokenized data (bigrams) #####
-# preprocess data
-recipe <- recipe(bclass ~., data = stoken_train) |> 
-  step_normalize(all_numeric_predictors()) |> 
-  step_pca(all_numeric(), num_comp = 10) # adjust num_comp
+# Preprocess data
+recipe <- recipe(bclass ~ ., data = stoken_train) |> 
+  step_zv(all_predictors()) |>  # Remove zero-variance predictors
+  step_normalize(all_numeric_predictors()) |>  # Normalize remaining predictors
+  step_pca(all_numeric_predictors(), num_comp = 10)
 
 # define logistic pcr model
 logistic_model <- logistic_reg(mode = "classification") |> 
