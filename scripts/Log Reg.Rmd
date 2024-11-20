@@ -32,8 +32,7 @@ load('data/claims-clean-task-1.RData')
 
 ```{r, eval=FALSE}
 data = claims_clean %>%
-  select(c(.id, bclass, text_clean, heading_clean)) %>%
-  mutate(.id = factor(.id))
+  select(c(.id, bclass, text_clean, heading_clean))
 
 data_heading = data %>%
   unnest_tokens(word, heading_clean) %>%
@@ -76,7 +75,7 @@ data_wide_final = data_wide_1 %>% select(-.id)
 ```{r}
 # partition data
 set.seed(102722)
-partitions <- data_wide_1 %>% initial_split(prop = 0.7)
+partitions <- data_wide_1 %>% initial_split(prop = 0.8)
 
 # separate DTM from labels
 test_dtm <- testing(partitions) %>%
