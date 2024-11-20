@@ -27,7 +27,7 @@ library(tensorflow)
 
 # load cleaned data
 load('data/claims-clean-example.RData')
-
+head(claims_clean)
 # partition into training and testing sets
 set.seed(110122)
 partitions <- claims_clean %>%
@@ -58,9 +58,12 @@ test_text_preprocessed <- preprocess_layer(test_text) %>% as.array()
 
 # define NN architecture
 model <- keras_model_sequential() %>%
-  layer_dropout(0.2) %>% # prevent overfit
-  layer_dense(units = 100, activation = 'relu') %>%
-  layer_dropout(0.2) %>% # prevent overfit
+  layer_dense(units = 128, activation = 'relu', input_shape = dim(train_text_preprocessed)[-1]) %>%
+  layer_dropout(0.2) %>%
+  layer_dense(units = 64, activation = 'relu') %>% 
+  layer_dropout(0.2) %>% 
+  layer_dense(units = 32, activation = 'relu') %>% 
+  layer_dropout(0.2) %>% 
   layer_dense(1) %>%
   layer_activation(activation = 'sigmoid')
 
@@ -74,12 +77,12 @@ model %>% compile(
 )
 
 # train
-callback <- callback_early_stopping(monitor="val_loss", patience = 3)
+callback <- callback_early_stopping(monitor="val_loss", patience = 4)
 history <- model %>%
   fit(train_text_preprocessed, 
       train_labels,
       validation_split = 0.3,
-      epochs = 10,
+      epochs = 10)
       callbacks = list(callback)) # prevent overfit
 
 ## CHECK TEST SET ACCURACY HERE
@@ -87,4 +90,4 @@ test_pred <- model %>% evaluate(test_text_preprocessed, test_labels)
 cat("Test Loss:", test_pred[1], "Test Accuracy:", test_pred[2], "\n")
 
 # save the entire model as a SavedModel
-save_model_tf(model, "results/first_NN")
+save_model_tf(model, "results/NN_claims_clean")
