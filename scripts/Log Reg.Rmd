@@ -30,65 +30,71 @@ data = claims_clean %>%
 data_heading = data %>%
   unnest_tokens(word, heading_clean) %>%
   anti_join(stop_words) %>%
-  lemmatize_words() %>%
+  mutate(word = lemmatize_words(word)) %>%
   select(-text_clean) %>%
-  group_by(.id, bclass) %>%
-  count(word)
+  count(.id, word) %>%
+  bind_tf_idf(term = word, document = .id, n = n)
 
 data_text = data %>%
   unnest_tokens(word, text_clean) %>%
   anti_join(stop_words) %>%
-  lemmatize_words() %>%
+  mutate(word = lemmatize_words(word)) %>%
   select(-heading_clean) %>%
-  group_by(.id, bclass) %>%
-  count(word)
+  count(.id, word) %>%
+  bind_tf_idf(term = word, document = .id, n = n)
 
 data_heading_wide = data_heading %>%
-  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  pivot_wider(names_from = word, values_from = tf_idf, 
+              values_fill = 0, id_cols = .id) %>%
   replace(is.na(.), 0)
 
 data_text_wide = data_text %>%
-  pivot_wider(names_from = word, values_from = n, values_fill = 0) %>%
+  pivot_wider(names_from = word, values_from = tf_idf, 
+              values_fill = 0, id_cols = .id) %>%
   replace(is.na(.), 0)
 
-data_wide = full_join(data_heading_wide, data_text_wide, by = join_by(.id), multiple = 'all', keep = TRUE, relationship = 'one-to-one') %>%
+data_wide = full_join(data_heading_wide, data_text_wide, by = join_by(.id), 
+                      multiple = 'all', keep = TRUE, 
+                      relationship = 'one-to-one') %>%
   drop_na() %>%
-  select(-.id.x)
+  rename(.id = .id.x)
+
+data_wide_1 = full_join(data_wide, data %>% select(c(.id, bclass)), by = join_by(.id))
+
+data_wide_final = data_wide_1 %>% select(-.id) %>%
+  drop_na()
 ```
 
 ```{r}
 set.seed(1000)
-all_split = initial_split(data_wide, prop = 0.7, strata = bclass.x)
+all_split = initial_split(data_wide_final, prop = 0.7, strata = bclass)
 all_train = training(all_split)
 all_test = testing(all_split)
 ```
 
 ```{r}
-data_recipe = recipe(bclass.x ~ ., 
+data_recipe = recipe(bclass ~ ., 
                         data = all_train) %>%
-  step_normalize(all_numeric_predictors())
-  #step_pca(all_numeric(), threshold = .75)
+  step_zv(all_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_pca(all_numeric(), threshold = .75)
 
 prep(data_recipe) %>%
   bake(new_data = all_train)
-
 ```
 
 ```{r}
-test <- data_wide %>% 
-  select(-bclass.x) %>%
-  as.matrix() %>%
-  as('sparseMatrix') 
+log_reg = logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification")
 
-start <- Sys.time()
-svd_out <- sparsesvd(test)
-end <- Sys.time()
-time_ssvd <- end - start
+all_log_wkflow = workflow() %>% 
+  add_model(log_reg) %>% 
+  add_recipe(data_recipe)
 
-start <- Sys.time()
-prcomp_out <- prcomp(test, center = T)
-end <- Sys.time()
-time_prcomp <- end - start
+all_log_fit = fit(all_log_wkflow, all_train)
 
-time_prcomp - time_ssvd
+all_log_roc = augment(all_log_fit, all_test) %>% 
+  roc_auc(survived, .pred_Yes)
 ```
+
