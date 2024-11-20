@@ -10,19 +10,27 @@ library(tidyverse)
 library(tidytext)
 library(textstem)
 library(rvest)
-library(qdapRegex)
 library(stopwords)
 library(tokenizers)
 library(tidymodels)
+library(modelr)
+library(Matrix)
 library(sparsesvd)
+library(glmnet)
+library(qdapRegex)
 tidymodels_prefer()
+# path to activity files on repo
+url <- 'https://raw.githubusercontent.com/pstat197/pstat197a/main/materials/activities/data/'
+
+# load a few functions for the activity
+source(paste(url, 'projection-functions.R', sep = ''))
 ```
 
 ```{r}
 load('data/claims-clean-task-1.RData')
 ```
 
-```{r}
+```{r, eval=FALSE}
 data = claims_clean %>%
   select(c(.id, bclass, text_clean, heading_clean)) %>%
   mutate(.id = factor(.id))
@@ -59,20 +67,56 @@ data_wide = full_join(data_heading_wide, data_text_wide, by = join_by(.id),
   drop_na() %>%
   rename(.id = .id.x)
 
-data_wide_1 = full_join(data_wide, data %>% select(c(.id, bclass)), by = join_by(.id))
-
-data_wide_final = data_wide_1 %>% select(-.id) %>%
+data_wide_1 = full_join(data_wide, data %>% select(c(.id, bclass)), by = join_by(.id)) %>%
   drop_na()
+
+data_wide_final = data_wide_1 %>% select(-.id)
 ```
 
 ```{r}
+# partition data
+set.seed(102722)
+partitions <- data_wide_1 %>% initial_split(prop = 0.7)
+
+# separate DTM from labels
+test_dtm <- testing(partitions) %>%
+  select(-.id, -bclass)
+test_labels <- testing(partitions) %>%
+  select(.id, bclass)
+
+# same, training set
+train_dtm <- training(partitions) %>%
+  select(-.id, -bclass)
+train_labels <- training(partitions) %>%
+  select(.id, bclass)
+
+```
+
+```{r}
+# find projections based on training data
+proj_out <- projection_fn(.dtm = train_dtm, .prop = 0.7)
+train_dtm_projected <- proj_out$data
+
+# how many components were used?
+proj_out$n_pc
+```
+
+```{r}
+train <- train_labels %>%
+  transmute(bclass = factor(bclass)) %>%
+  bind_cols(train_dtm_projected)
+
+fit <- glm(..., data = train, ...)
+```
+
+```{r, eval=FALSE}
 set.seed(1000)
 all_split = initial_split(data_wide_final, prop = 0.7, strata = bclass)
 all_train = training(all_split)
 all_test = testing(all_split)
 ```
 
-```{r}
+```{r, eval=FALSE}
 data_recipe = recipe(bclass ~ ., 
                         data = all_train) %>%
   step_zv(all_predictors()) %>%
@@ -83,7 +127,7 @@ prep(data_recipe) %>%
   bake(new_data = all_train)
 ```
 
-```{r}
+```{r, eval=FALSE}
 log_reg = logistic_reg() %>% 
   set_engine("glm") %>% 
   set_mode("classification")
