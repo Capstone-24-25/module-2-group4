@@ -3,19 +3,14 @@
 
 # can comment entire section out if no changes to preprocessing.R
 source('scripts/preprocessing.R')
-
 # load raw data
 load('data/claims-raw.RData')
-
 # preprocess (will take a minute or two)
 claims_clean <- claims_raw %>%
   parse_data()
-
-# singular tokenization
-tokens_clean <- claims_clean %>%
+tokens_clean <- claims_clean %>% # singular tokenization
   nlp_fn()
-
-tokens_clean_bigram <- claims_clean %>%
+tokens_clean_bigram <- claims_clean %>% # bigram tokenization
   nlp_fn_bigram()
 
 # export
@@ -37,19 +32,11 @@ load('data/claims-clean-example.RData')
 set.seed(110122)
 partitions <- claims_clean %>%
   initial_split(prop = 0.8)
-# training set
-train_text <- training(partitions) %>%
-  pull(text_clean)
-train_labels <- training(partitions) %>%
-  pull(bclass) %>%
-  as.numeric() - 1
 
-# testing set
-test_text <- testing(partitions) |> 
-  pull(text_clean)
-test_labels <- testing(partitions) |> 
-  pull(bclass) |> 
-  as.numeric() -1
+train_text <- training(partitions) %>% pull(text_clean)
+train_labels <- training(partitions) %>% pull(bclass) %>% as.numeric() - 1
+test_text <- testing(partitions) %>% pull(text_clean)
+test_labels <- testing(partitions) %>% pull(bclass) %>% as.numeric() - 1
 
 # If having library conflicts
 #install.packages("keras", type = "source")
@@ -71,10 +58,9 @@ test_text_preprocessed <- preprocess_layer(test_text) %>% as.array()
 
 # define NN architecture
 model <- keras_model_sequential() %>%
-  preprocess_layer() %>%
-  layer_dropout(0.2) %>% # prevent overfitting
+  layer_dropout(0.2) %>% # prevent overfit
   layer_dense(units = 100, activation = 'relu') %>%
-  layer_dropout(0.2) %>%
+  layer_dropout(0.2) %>% # prevent overfit
   layer_dense(1) %>%
   layer_activation(activation = 'sigmoid')
 
@@ -88,17 +74,17 @@ model %>% compile(
 )
 
 # train
+callback <- callback_early_stopping(monitor="val_loss", patience = 3)
 history <- model %>%
-  fit(train_text, 
+  fit(train_text_preprocessed, 
       train_labels,
       validation_split = 0.3,
-      epochs = 10)
+      epochs = 10,
+      callbacks = list(callback)) # prevent overfit
 
 ## CHECK TEST SET ACCURACY HERE
-test_pred <- model %>% predict()
-test_accuracy <- mean((test_pred > 0.5) == test_labels)
-cat("Test Accuracy: ", test_accuracy, "\n")
-# compare to true labels
+test_pred <- model %>% evaluate(test_text_preprocessed, test_labels)
+cat("Test Loss:", test_pred[1], "Test Accuracy:", test_pred[2], "\n")
 
 # save the entire model as a SavedModel
-save_model_tf(model, "results/example-model")
+save_model_tf(model, "results/first_NN")
