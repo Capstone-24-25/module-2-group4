@@ -1,6 +1,6 @@
 ---
 title: "Summary of exploratory tasks"
-author: 'YOUR NAMES HERE'
+author: 'Reese Karo,...'
 date: today
 ---
 
@@ -12,14 +12,16 @@ Does including header content improve predictions? Answer the question and provi
 
 Do bigrams capture additional information relevant to the classification of interest? Answer the question, **briefly** describe what analysis you conducted to arrive at your answer, and provide quantitative evidence supporting your answer.
 
-### Neural net
+### Neural Net
 
-Summarize the neural network model you trained by desribing:
+The *Neural Network* created for predicting whether a website contained relevent information or does not, was tested and developed using a variety of parameters and different configurations. Working with the `claims-clean.RData` file, it was preprocessed using the `layer_text_vectorization` function from keras, which can tokenize the data and will ensure the data can be easily trained on for the model. No extra preprocessing measures were taken due to the `preoprecessing.R` file used to clean the raw data.
 
--   architecture
+The ***architecture*** of the model was trained on different forms starting with a hidden layer of 100 node with an output layer of 1 node using the ***sigmoid*** activation function to predict a binary response (i.e. 0 or 1). However, increasing the number of hidden layers to 2 seemed to improve performance. The first layer includes 512 nodes due to having more parameters (tokenized words) than observations (URLS). Coupling the layer with the ***relu*** activation gives us the non-linearity for the model. The second layer decreases to 256 (half of 512) nodes again using the relu activation, then passes to the final output layer which is a binary output.
 
--   optimization and loss
+The model optimizes the weights using the `Adam` function and calculates the loss between the truth and the predicted using `binary_crossentropy`. Further enhancements were used, such as, early stopping ( `callback_early_stopping`) to prevent ***over fitting*** the model to the training data, as well as including dropout layers. The callback focuses on the validation loss metric, where the patience parameter is set to 4. This was an optimal value since the validation loss increases exponentially when greater than 4 or cuts off too quickly when set to less than 4. We set the dropout rate to 20% (0.2) to drop 20% of the nodes from training at each hidden layer.
 
--   training epochs
+Setting the epochs, or training rounds, to 20 to allow the model to train longe, however, the early stopping callback will stop the model much earlier than all 20 epochs.
 
--   predictive accuracy
+After running the model with multiple unique setups, the performance did not change as much and the settings above were kept. The training performance falls somewhere between 91% to 94% binary accuracy, and with a validation binary accuracy roughly around 80% to 81%. After evaluating the model on a partitioned testing set from claims-clean, our test results were a loss of 1.22, and a ***predictive accuracy*** of 81%.
+
+Improvements could include regularization terms such as a l1 penalty term due to the sparsity of the matrix, using a hyperband to tune and test different settings. However, after using a l1 penalty term, the performance decreased, thus removing the term was optimal. Changing the learning rate can also be optimized to increase perfomance. Due to the nature of being a shallow and wide matrix, optimizing the performance of the neural net is a challenge that takes time.

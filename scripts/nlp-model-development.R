@@ -77,12 +77,13 @@ model %>% compile(
 )
 
 # train
+set.seed(110122)
 callback <- callback_early_stopping(monitor="val_loss", patience = 4)
 history <- model %>%
   fit(train_text_preprocessed, 
       train_labels,
       validation_split = 0.3,
-      epochs = 10)
+      epochs = 20,
       callbacks = list(callback)) # prevent overfit
 
 ## CHECK TEST SET ACCURACY HERE
