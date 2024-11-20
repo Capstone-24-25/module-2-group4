@@ -11,7 +11,16 @@ load('data/claims-raw.RData')
 claims_clean <- claims_raw %>%
   parse_data()
 
+# singular tokenization
+tokens_clean <- claims_clean %>%
+  nlp_fn()
+
+tokens_clean_bigram <- claims_clean %>%
+  nlp_fn_bigram()
+
 # export
+save(tokens_clean, file = 'data/claims-clean-singular.RData')
+save(tokens_clean_bigram, file = 'data/claims-clean-bigram.RData')
 save(claims_clean, file = 'data/claims-clean-example.RData')
 
 ## MODEL TRAINING (NN)
@@ -24,16 +33,23 @@ library(tensorflow)
 # load cleaned data
 load('data/claims-clean-example.RData')
 
-# partition
+# partition into training and testing sets
 set.seed(110122)
 partitions <- claims_clean %>%
   initial_split(prop = 0.8)
-
+# training set
 train_text <- training(partitions) %>%
   pull(text_clean)
 train_labels <- training(partitions) %>%
   pull(bclass) %>%
   as.numeric() - 1
+
+# testing set
+test_text <- testing(partitions) |> 
+  pull(text_clean)
+test_labels <- testing(partitions) |> 
+  pull(bclass) |> 
+  as.numeric() -1
 
 # If having library conflicts
 #install.packages("keras", type = "source")
@@ -45,17 +61,19 @@ preprocess_layer <- layer_text_vectorization(
   standardize = NULL,
   split = 'whitespace',
   ngrams = NULL,
-  max_tokens = NULL,
+  max_tokens = 10000,
   output_mode = 'tf_idf'
 )
-
 preprocess_layer %>% adapt(train_text)
+# Preprocess the training and testing data
+train_text_preprocessed <- preprocess_layer(train_text) %>% as.array()
+test_text_preprocessed <- preprocess_layer(test_text) %>% as.array()
 
 # define NN architecture
 model <- keras_model_sequential() %>%
   preprocess_layer() %>%
-  layer_dropout(0.2) %>%
-  layer_dense(units = 25) %>%
+  layer_dropout(0.2) %>% # prevent overfitting
+  layer_dense(units = 100, activation = 'relu') %>%
   layer_dropout(0.2) %>%
   layer_dense(1) %>%
   layer_activation(activation = 'sigmoid')
@@ -74,9 +92,13 @@ history <- model %>%
   fit(train_text, 
       train_labels,
       validation_split = 0.3,
-      epochs = 5)
+      epochs = 10)
 
 ## CHECK TEST SET ACCURACY HERE
+test_pred <- model %>% predict()
+test_accuracy <- mean((test_pred > 0.5) == test_labels)
+cat("Test Accuracy: ", test_accuracy, "\n")
+# compare to true labels
 
 # save the entire model as a SavedModel
 save_model_tf(model, "results/example-model")

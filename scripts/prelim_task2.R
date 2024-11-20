@@ -6,7 +6,12 @@ library(tidymodels)
 library(tidytext)
 library(stopwords)
 library(textstem)
+library(Matrix)
+library(irlba)
+library(Metrics)
+tidymodels_prefer()
 
+<<<<<<< HEAD
 # secondary tokenization of data to obtain bigrams with stop words
 load('claims-clean-example.Rdata')
 stoken <- claims_clean %>%
@@ -26,33 +31,48 @@ stoken <- claims_clean %>%
               values_from = tf_idf,
               values_fill = 0) %>%
   ungroup()
+=======
+# retrieve pre-processed data for bigram PCA and logistic regression
+load('data/claims-clean-bigram.RData')
+load('data/claims-clean-singular.RData')
+head(tokens_clean_bigram)
+head(tokens_clean_singular)
+#### PCA tokenized data then fit logistic regression ####
+numeric_bigram_token <- tokens_clean_bigram |> 
+  select(-.id, -bclass) |> 
+  as.matrix()
+>>>>>>> Reese's-Branch
 
-# visualize the data
-stoken %>% head()
+# convert bigram to a sparse matrix to save computation
+sparse_bigram <- as(numeric_bigram_token, "dgCMatrix")
+pca_sparse <- irlba(sparse_bigram, nv = 10, center = T) # running PCA
 
-# split data into training and testing
-partitions <- stoken %>%
-  initial_split(prop = 0.7, strata = bclass)
+# Extract principal components
+pc_data <- as.data.frame(pca_sparse$u)
+pc_data$bclass <- tokens_clean_bigram$bclass 
 
-stoken_train <- training(partitions) |> mutate(bclass = as.factor(bclass))
-stoken_test <- testing(partitions) |> mutate(bclass = as.factor(bclass))
+head(pc_data)
 
+<<<<<<< HEAD
 ##### fit logistic pcr model to tokenized data (bigrams) #####
 # Preprocess data
 recipe <- recipe(bclass ~ ., data = stoken_train) |> 
   step_zv(all_predictors()) |>  # Remove zero-variance predictors
   step_normalize(all_numeric_predictors()) |>  # Normalize remaining predictors
   step_pca(all_numeric_predictors(), num_comp = 10)
+=======
+# Create a logistic regression model for bigrams only
+logistic_bigram_pca <- glm(bclass ~., data = pc_data, family = binomial)
+>>>>>>> Reese's-Branch
 
-# define logistic pcr model
-logistic_model <- logistic_reg(mode = "classification") |> 
-  set_engine("glmnet")
+# Predict log-odds from bigram model
+log_odds <- predict(logistic_bigram_pca, type = "link")
 
-# create a workflow
-pca_workflow <- workflow() |> 
-  add_recipe(recipe) |> 
-  add_model(logistic_model)
+# Combine predicted log-odds with bigram PCs
+pca_logit_combo <- pc_data
+pca_logit_combo$log_odds <- log_odds
 
+<<<<<<< HEAD
 # train model on pca data first
 pca_fit <- pca_workflow |> 
   fit(data = stoken_train)
@@ -91,3 +111,20 @@ second_eval_metrics <- metrics(second_pred, truth = bclass, estimate = .pred_cla
 
 # Print metrics for the second model
 print(second_eval_metrics)
+=======
+# Fit a second logistic regression model
+logistic_combined <- glm(bclass ~ ., data = pca_logit_combo, family = binomial)
+
+# Predict probabilities for test set
+pc_predictions <- predict(logistic_bigram_pca, newdata = claims_test, type = "response")
+combined_predictions <- predict(logistic_combined, newdata = claims_test, type = "response")
+
+# Evaluate accuracy
+
+bigram_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = pc_predictions)
+combined_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = combined_predictions)
+
+# Output results
+cat("Accuracy with Bigram PCA:", bigram_accuracy, "\n")
+cat("Accuracy with Combined Model:", combined_ac
+>>>>>>> Reese's-Branch
