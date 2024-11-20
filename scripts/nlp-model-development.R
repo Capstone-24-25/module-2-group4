@@ -2,17 +2,26 @@
 #################
 
 # can comment entire section out if no changes to preprocessing.R
-#source('scripts/preprocessing.R')
+source('scripts/preprocessing.R')
 
 # load raw data
-#load('data/claims-raw.RData')
+load('data/claims-raw.RData')
 
 # preprocess (will take a minute or two)
-#claims_clean <- claims_raw %>%
-#  parse_data()
+claims_clean <- claims_raw %>%
+  parse_data()
+
+# singular tokenization
+tokens_clean <- claims_clean %>%
+  nlp_fn()
+
+tokens_clean_bigram <- claims_clean %>%
+  nlp_fn_bigram()
 
 # export
-#save(claims_clean, file = 'data/claims-clean-example.RData')
+save(tokens_clean, file = 'data/claims-clean-singular.RData')
+save(tokens_clean_bigram, file = 'data/claims-clean-bigram.RData')
+save(claims_clean, file = 'data/claims-clean-example.RData')
 
 ## MODEL TRAINING (NN)
 ######################

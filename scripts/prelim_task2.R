@@ -6,82 +6,53 @@ library(tidymodels)
 library(tidytext)
 library(stopwords)
 library(textstem)
+library(Matrix)
+library(irlba)
+library(Metrics)
+tidymodels_prefer()
 
-# secondary tokenization of data to obtain bigrams
-load('claims-clean-example.Rdata')
-stoken <- claims_clean %>%
-  mutate(text_clean = str_trim(text_clean)) %>%
-  filter(str_length(text_clean) > 5) %>%
-  unnest_tokens(output = 'token',
-                input = text_clean,
-                token = 'ngrams',
-                n = 2) %>%
-  group_by(.id, bclass) %>%
-  count(token) %>%
-  bind_tf_idf(term = token,
-              document = .id,
-              n = n) %>%
-  pivot_wider(id_cols = c(.id, bclass),
-              names_from = token,
-              values_from = tf_idf,
-              values_fill = 0) %>%
-  ungroup()
+# retrieve pre-processed data for bigram PCA and logistic regression
+load('data/claims-clean-bigram.RData')
+load('data/claims-clean-singular.RData')
+head(tokens_clean_bigram)
+head(tokens_clean_singular)
+#### PCA tokenized data then fit logistic regression ####
+numeric_bigram_token <- tokens_clean_bigram |> 
+  select(-.id, -bclass) |> 
+  as.matrix()
 
-# visualize the data
-stoken %>% head()
+# convert bigram to a sparse matrix to save computation
+sparse_bigram <- as(numeric_bigram_token, "dgCMatrix")
+pca_sparse <- irlba(sparse_bigram, nv = 10, center = T) # running PCA
 
-# split data into training and testing
-partitions <- stoken %>%
-  initial_split(prop = 0.7, strata = bclass)
+# Extract principal components
+pc_data <- as.data.frame(pca_sparse$u)
+pc_data$bclass <- tokens_clean_bigram$bclass 
 
-stoken_train <- training(partitions) |> mutate(bclass = as.factor(bclass))
-stoken_test <- testing(partitions) |> mutate(bclass = as.factor(bclass))
+head(pc_data)
 
-##### fit logistic pcr model to tokenized data (bigrams) #####
-# preprocess data
-recipe <- recipe(bclass ~. , data = stoken_train) |> 
-  step_zv(all_predictors()) |>
-  step_normalize(all_numeric_predictors()) |> 
-  step_pca(all_numeric(), num_comp = 10) # adjust num_comp
+# Create a logistic regression model for bigrams only
+logistic_bigram_pca <- glm(bclass ~., data = pc_data, family = binomial)
 
-# define logistic pcr model
-logistic_model <- logistic_reg(mode = "classification") |> 
-  set_engine("glmnet")
+# Predict log-odds from bigram model
+log_odds <- predict(logistic_bigram_pca, type = "link")
 
-# create a workflow
-pca_workflow <- workflow() |> 
-  add_recipe(recipe) |> 
-  add_model(logistic_model)
+# Combine predicted log-odds with bigram PCs
+pca_logit_combo <- pc_data
+pca_logit_combo$log_odds <- log_odds
 
-# fitting the first model
-pca_fit <- pca_workflow |> 
-  fit(data = stoken_train)
+# Fit a second logistic regression model
+logistic_combined <- glm(bclass ~ ., data = pca_logit_combo, family = binomial)
 
-# extract predicted log-odds-ratios
-pca_pred <- predict(pca_fit, stoken_test, type = "link") |> 
-  bind_cols(stoken_test)
+# Predict probabilities for test set
+pc_predictions <- predict(logistic_bigram_pca, newdata = claims_test, type = "response")
+combined_predictions <- predict(logistic_combined, newdata = claims_test, type = "response")
 
-# combine log-odds-ratios with principal components
-combined_data <- pca_pred |> 
-  select(.pred_link, starts_with("PC")) # assuming PCs are named like "PC1", "PC2", etc.
+# Evaluate accuracy
 
-# fit a second logistic regression model
-second_logistic_model <- logistic_reg(mode = "classification") |> 
-  set_engine("glmnet")
+bigram_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = pc_predictions)
+combined_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = combined_predictions)
 
-second_workflow <- workflow() |> 
-  add_formula(bclass ~ .) |> 
-  add_model(second_logistic_model)
-
-second_fit <- second_workflow |> 
-  fit(data = combined_data)
-
-# evaluate the second model
-second_pred <- predict(second_fit, combined_data, type = "prob") |> 
-  bind_cols(combined_data)
-
-# metrics for the second model
-second_eval_metrics <- metrics(second_pred, truth = bclass, estimate = .pred_class)
-
-# Print metrics for the second model
-print(second_eval_metrics)
+# Output results
+cat("Accuracy with Bigram PCA:", bigram_accuracy, "\n")
+cat("Accuracy with Combined Model:", combined_ac
