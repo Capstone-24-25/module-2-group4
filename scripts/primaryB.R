@@ -52,6 +52,8 @@ train_padded <- pad_sequences(train_sequences, maxlen = maxlen)
 test_padded <- pad_sequences(test_sequences, maxlen = maxlen)
 
 # model with L2 regularization to improve accuracy
+num_classes <- length(unique(claims_clean$mclass))
+
 model_lstm <- keras_model_sequential() %>%
   layer_embedding(input_dim = vocab_size, output_dim = 100, input_length = maxlen) %>%
   layer_lstm(units = 128, 
