@@ -13,7 +13,9 @@ tidymodels_prefer()
 
 # retrieve pre-processed data for bigram PCA and logistic regression
 load('data/claims-clean-bigram.RData')
+load('data/claims-test.RData')
 head(tokens_clean_bigram)
+head(claims_test)
 
 #### PCA tokenized data then fit logistic regression ####
 numeric_bigram_token <- tokens_clean_bigram |> 

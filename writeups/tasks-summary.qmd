@@ -1,6 +1,6 @@
 ---
 title: "Summary of exploratory tasks"
-author: 'Reese Karo, Johnson Leung, ...'
+author: 'Reese Karo, Johnson Leung, Yamileth Martinez, Eric Zhang,'
 date: today
 format:
   html:
