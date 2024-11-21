@@ -2,6 +2,9 @@
 title: "Summary of exploratory tasks"
 author: 'Reese Karo, Johnson Leung, ...'
 date: today
+format:
+  html:
+    embed-resources: true
 ---
 
 ### HTML scraping
