@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yamileth Martinez and Wentao Zhang">
+
+<title>Primary</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Primary_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Primary_files/libs/quarto-html/quarto.js"></script>
+<script src="Primary_files/libs/quarto-html/popper.min.js"></script>
+<script src="Primary_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Primary_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Primary_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Primary_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Primary_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Primary_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Primary_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Primary</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yamileth Martinez and Wentao Zhang </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="predictive-models" class="level1">
+<h1>Predictive Models</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'randomForest' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>randomForest 4.7-1.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Type rfNews() to see new features/changes/bug fixes.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tm' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: NLP</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'NLP' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'dplyr' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:randomForest':
+
+    combine</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidytext' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'quanteda' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Package version: 4.1.0
+Unicode version: 13.0
+ICU version: 69.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Parallel computing: 12 of 12 threads used.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>See https://quanteda.io for tutorials and examples.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'quanteda'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:tm':
+
+    stopwords</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:NLP':
+
+    meta, meta&lt;-</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidyr' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(keras)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'keras' was built under R version 4.3.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/claims-clean-example.RData"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/claims-test.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="binary-classification" class="level2">
+<h2 class="anchored" data-anchor-id="binary-classification">Binary Classification</h2>
+<section id="text-preprocessing" class="level4">
+<h4 class="anchored" data-anchor-id="text-preprocessing">Text Preprocessing</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Factor labels to integers</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>claims_clean<span class="sc">$</span>bclass <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(claims_clean<span class="sc">$</span>bclass)) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Convert to binary (0, 1)</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Text preprocessing</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocess training data (claims_clean)</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>claims_clean<span class="sc">$</span>text_clean <span class="ot">&lt;-</span> claims_clean<span class="sc">$</span>text_tmp <span class="sc">%&gt;%</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"&lt;.*?&gt;"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span>        <span class="co"># Remove HTML tags</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span>         <span class="co"># Remove extra whitespace</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>()                         <span class="co"># Trim leading/trailing spaces</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocess test data (claims_test)</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>claims_test<span class="sc">$</span>text_clean <span class="ot">&lt;-</span> claims_test<span class="sc">$</span>text_tmp <span class="sc">%&gt;%</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"&lt;.*?&gt;"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>()</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create and fit tokenizer</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="ot">&lt;-</span> <span class="fu">text_tokenizer</span>(<span class="at">num_words =</span> <span class="dv">10000</span>)  <span class="co"># Adjust vocab size as needed</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="sc">%&gt;%</span> <span class="fu">fit_text_tokenizer</span>(claims_clean<span class="sc">$</span>text_clean)</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="ot">&lt;-</span> <span class="fu">length</span>(tokenizer<span class="sc">$</span>word_index) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize train and test text</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>train_sequences <span class="ot">&lt;-</span> <span class="fu">texts_to_sequences</span>(tokenizer, claims_clean<span class="sc">$</span>text_clean)</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>test_sequences <span class="ot">&lt;-</span> <span class="fu">texts_to_sequences</span>(tokenizer, claims_test<span class="sc">$</span>text_clean)</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad sequences to the same length</span></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>maxlen <span class="ot">&lt;-</span> <span class="dv">200</span>  <span class="co"># Fixed sequence length</span></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>train_padded <span class="ot">&lt;-</span> <span class="fu">pad_sequences</span>(train_sequences, <span class="at">maxlen =</span> maxlen)</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>test_padded <span class="ot">&lt;-</span> <span class="fu">pad_sequences</span>(test_sequences, <span class="at">maxlen =</span> maxlen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="predictive-models-1" class="level4">
+<h4 class="anchored" data-anchor-id="predictive-models-1">Predictive Models</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert binary class labels to categorical</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>train_labels_binary <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(claims_clean<span class="sc">$</span>bclass)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build LSTM model for binary classification</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>model_binary <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_embedding</span>(<span class="at">input_dim =</span> vocab_size, <span class="at">output_dim =</span> <span class="dv">100</span>, <span class="at">input_length =</span> maxlen) <span class="sc">%&gt;%</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">units =</span> <span class="dv">128</span>, </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">kernel_regularizer =</span> <span class="fu">regularizer_l2</span>(<span class="fl">0.01</span>),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">dropout =</span> <span class="fl">0.2</span>, </span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">recurrent_dropout =</span> <span class="fl">0.2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">64</span>, <span class="at">activation =</span> <span class="st">'relu'</span>,</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">kernel_regularizer =</span> <span class="fu">regularizer_l2</span>(<span class="fl">0.01</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">2</span>, <span class="at">activation =</span> <span class="st">'softmax'</span>)  <span class="co"># Binary classification (2 classes)</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile model</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>model_binary <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">'binary_crossentropy'</span>, </span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(), </span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">'accuracy'</span>)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="estimated-prediction-accuracy" class="level4">
+<h4 class="anchored" data-anchor-id="estimated-prediction-accuracy">Estimated Prediction Accuracy</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model and capture history</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>history_binary <span class="ot">&lt;-</span> model_binary <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  train_padded, </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  train_labels_binary,  <span class="co"># One-hot encoded binary labels</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_split =</span> <span class="fl">0.2</span>, </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">10</span>, </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>, </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">list</span>(<span class="fu">callback_early_stopping</span>(<span class="at">monitor =</span> <span class="st">"val_loss"</span>, <span class="at">patience =</span> <span class="dv">3</span>))</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/10
+27/27 - 28s - loss: 2.5173 - accuracy: 0.5310 - val_loss: 1.8789 - val_accuracy: 0.5537 - 28s/epoch - 1s/step
+Epoch 2/10
+27/27 - 26s - loss: 1.5115 - accuracy: 0.6647 - val_loss: 1.2300 - val_accuracy: 0.6425 - 26s/epoch - 977ms/step
+Epoch 3/10
+27/27 - 24s - loss: 1.0261 - accuracy: 0.7196 - val_loss: 0.8882 - val_accuracy: 0.6939 - 24s/epoch - 895ms/step
+Epoch 4/10
+27/27 - 119s - loss: 0.7028 - accuracy: 0.7944 - val_loss: 0.7365 - val_accuracy: 0.7220 - 119s/epoch - 4s/step
+Epoch 5/10
+27/27 - 25s - loss: 0.5536 - accuracy: 0.8265 - val_loss: 0.6664 - val_accuracy: 0.7220 - 25s/epoch - 909ms/step
+Epoch 6/10
+27/27 - 23s - loss: 0.4666 - accuracy: 0.8516 - val_loss: 0.6346 - val_accuracy: 0.7336 - 23s/epoch - 859ms/step
+Epoch 7/10
+27/27 - 24s - loss: 0.4256 - accuracy: 0.8557 - val_loss: 0.6216 - val_accuracy: 0.7150 - 24s/epoch - 881ms/step
+Epoch 8/10
+27/27 - 25s - loss: 0.4100 - accuracy: 0.8581 - val_loss: 0.5903 - val_accuracy: 0.7407 - 25s/epoch - 916ms/step
+Epoch 9/10
+27/27 - 24s - loss: 0.3726 - accuracy: 0.8750 - val_loss: 0.5817 - val_accuracy: 0.7640 - 24s/epoch - 902ms/step
+Epoch 10/10
+27/27 - 24s - loss: 0.3587 - accuracy: 0.8732 - val_loss: 0.6152 - val_accuracy: 0.7617 - 24s/epoch - 907ms/step</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make predictions on the test set</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>binary_test_predictions <span class="ot">&lt;-</span> model_binary <span class="sc">%&gt;%</span> <span class="fu">predict</span>(test_padded)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>30/30 - 1s - 1s/epoch - 45ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert predicted probabilities to binary labels</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>binary_predicted_classes <span class="ot">&lt;-</span> <span class="fu">apply</span>(binary_test_predictions, <span class="dv">1</span>, which.max) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Convert to binary (0, 1)</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Output data frame</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>binary_pred_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">.id =</span> claims_test<span class="sc">$</span>.id, <span class="at">bclass.pred =</span> binary_predicted_classes)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(binary_pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    .id bclass.pred
+1  url3           1
+2  url6           0
+3  url8           0
+4  url9           0
+5 url11           0
+6 url16           0</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="multi-class-classification" class="level2">
+<h2 class="anchored" data-anchor-id="multi-class-classification">Multi-Class Classification</h2>
+<section id="text-preprocessing-1" class="level4">
+<h4 class="anchored" data-anchor-id="text-preprocessing-1">Text Preprocessing</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># factor labels to integers</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>train_labels <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(<span class="fu">as.numeric</span>(claims_clean<span class="sc">$</span>mclass) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># text preprocessing</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># preprocess training data (claims_clean)</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>claims_clean<span class="sc">$</span>text_clean <span class="ot">&lt;-</span> claims_clean<span class="sc">$</span>text_tmp <span class="sc">%&gt;%</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"&lt;.*?&gt;"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span>        <span class="co"># remove HTML tags</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span>         <span class="co"># remove extra whitespace</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>()                         <span class="co"># trim leading/trailing spaces</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="co"># preprocess test data (claims_test)</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>claims_test<span class="sc">$</span>text_clean <span class="ot">&lt;-</span> claims_test<span class="sc">$</span>text_tmp <span class="sc">%&gt;%</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"&lt;.*?&gt;"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, .) <span class="sc">%&gt;%</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>()</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="co"># labels to factor to numeric for the training dataset</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>claims_clean<span class="sc">$</span>mclass <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(claims_clean<span class="sc">$</span>mclass)</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>claims_clean<span class="sc">$</span>mclass <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(claims_clean<span class="sc">$</span>mclass) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Zero-based indexing</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>train_labels_one_hot <span class="ot">&lt;-</span> <span class="fu">to_categorical</span>(claims_clean<span class="sc">$</span>mclass)</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a><span class="co"># create and fit tokenizer</span></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="ot">&lt;-</span> <span class="fu">text_tokenizer</span>(<span class="at">num_words =</span> <span class="dv">10000</span>)</span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="sc">%&gt;%</span> <span class="fu">fit_text_tokenizer</span>(claims_clean<span class="sc">$</span>text_clean)</span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="ot">&lt;-</span> <span class="fu">length</span>(tokenizer<span class="sc">$</span>word_index) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a><span class="co"># tokenize train and test text</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>train_sequences <span class="ot">&lt;-</span> <span class="fu">texts_to_sequences</span>(tokenizer, claims_clean<span class="sc">$</span>text_clean)</span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>test_sequences <span class="ot">&lt;-</span> <span class="fu">texts_to_sequences</span>(tokenizer, claims_test<span class="sc">$</span>text_clean)</span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a><span class="co"># pad sequences to the same length</span></span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>maxlen <span class="ot">&lt;-</span> <span class="dv">200</span>  <span class="co"># fixed for consistency</span></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>train_padded <span class="ot">&lt;-</span> <span class="fu">pad_sequences</span>(train_sequences, <span class="at">maxlen =</span> maxlen)</span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>test_padded <span class="ot">&lt;-</span> <span class="fu">pad_sequences</span>(test_sequences, <span class="at">maxlen =</span> maxlen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="predictive-models-2" class="level4">
+<h4 class="anchored" data-anchor-id="predictive-models-2">Predictive Models</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model with L2 regularization to improve accuracy</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>num_classes <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(claims_clean<span class="sc">$</span>mclass))</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>model_lstm <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_embedding</span>(<span class="at">input_dim =</span> vocab_size, <span class="at">output_dim =</span> <span class="dv">100</span>, <span class="at">input_length =</span> maxlen) <span class="sc">%&gt;%</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_lstm</span>(<span class="at">units =</span> <span class="dv">128</span>, </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">kernel_regularizer =</span> <span class="fu">regularizer_l2</span>(<span class="fl">0.01</span>),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">dropout =</span> <span class="fl">0.2</span>, </span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">recurrent_dropout =</span> <span class="fl">0.2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> <span class="dv">64</span>, <span class="at">activation =</span> <span class="st">'relu'</span>,</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">kernel_regularizer =</span> <span class="fu">regularizer_l2</span>(<span class="fl">0.01</span>)) <span class="sc">%&gt;%</span>  </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layer_dense</span>(<span class="at">units =</span> num_classes, <span class="at">activation =</span> <span class="st">'softmax'</span>)</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="co"># compile model</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>model_lstm <span class="sc">%&gt;%</span> <span class="fu">compile</span>(</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="st">'categorical_crossentropy'</span>, </span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(), </span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">'accuracy'</span>)</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a><span class="co"># fit model and capture history</span></span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>history_lstm <span class="ot">&lt;-</span> model_lstm <span class="sc">%&gt;%</span> <span class="fu">fit</span>(</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>  train_padded, </span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>  train_labels_one_hot,  <span class="co"># One-hot encoded labels</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_split =</span> <span class="fl">0.2</span>, </span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">10</span>,</span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">list</span>(<span class="fu">callback_early_stopping</span>(<span class="at">monitor =</span> <span class="st">"val_loss"</span>, <span class="at">patience =</span> <span class="dv">3</span>))</span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/10
+27/27 - 25s - loss: 3.2934 - accuracy: 0.4650 - val_loss: 2.5736 - val_accuracy: 0.4883 - 25s/epoch - 942ms/step
+Epoch 2/10
+27/27 - 23s - loss: 2.2404 - accuracy: 0.4714 - val_loss: 1.8900 - val_accuracy: 0.4883 - 23s/epoch - 840ms/step
+Epoch 3/10
+27/27 - 22s - loss: 1.6626 - accuracy: 0.5467 - val_loss: 1.4809 - val_accuracy: 0.5911 - 22s/epoch - 830ms/step
+Epoch 4/10
+27/27 - 23s - loss: 1.3350 - accuracy: 0.6326 - val_loss: 1.3691 - val_accuracy: 0.5935 - 23s/epoch - 834ms/step
+Epoch 5/10
+27/27 - 23s - loss: 1.0970 - accuracy: 0.7085 - val_loss: 1.1819 - val_accuracy: 0.6636 - 23s/epoch - 865ms/step
+Epoch 6/10
+27/27 - 22s - loss: 0.9178 - accuracy: 0.7506 - val_loss: 1.0780 - val_accuracy: 0.7033 - 22s/epoch - 829ms/step
+Epoch 7/10
+27/27 - 23s - loss: 0.8171 - accuracy: 0.7693 - val_loss: 1.0593 - val_accuracy: 0.6939 - 23s/epoch - 840ms/step
+Epoch 8/10
+27/27 - 23s - loss: 0.7737 - accuracy: 0.7792 - val_loss: 1.0471 - val_accuracy: 0.6986 - 23s/epoch - 835ms/step
+Epoch 9/10
+27/27 - 23s - loss: 0.7648 - accuracy: 0.7798 - val_loss: 1.0423 - val_accuracy: 0.7313 - 23s/epoch - 845ms/step
+Epoch 10/10
+27/27 - 22s - loss: 0.6799 - accuracy: 0.8055 - val_loss: 0.9926 - val_accuracy: 0.7103 - 22s/epoch - 818ms/step</code></pre>
+</div>
+</div>
+</section>
+<section id="estimated-prediction-accuracy-1" class="level4">
+<h4 class="anchored" data-anchor-id="estimated-prediction-accuracy-1">Estimated Prediction Accuracy</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make predictions on the test set</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>test_predictions <span class="ot">&lt;-</span> model_lstm <span class="sc">%&gt;%</span> <span class="fu">predict</span>(test_padded)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>30/30 - 1s - 1s/epoch - 46ms/step</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert predicted class probabilities to class labels</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>predicted_classes <span class="ot">&lt;-</span> <span class="fu">apply</span>(test_predictions, <span class="dv">1</span>, which.max) <span class="sc">-</span> <span class="dv">1</span>  <span class="co"># Convert 1-based index to 0-based</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># output data frame</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">.id =</span> claims_test<span class="sc">$</span>.id, <span class="at">mclass.pred =</span> predicted_classes)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    .id mclass.pred
+1  url3           3
+2  url6           1
+3  url8           0
+4  url9           0
+5 url11           0
+6 url16           0</code></pre>
+</div>
+</div>
+<p>We also want to save out data, and do so in the following code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># predictions saved to CSV file</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(pred_df, <span class="st">"predictions_lstm.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># saving model to file</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>model_lstm <span class="sc">%&gt;%</span> <span class="fu">save_model_tf</span>(<span class="st">"model_lstm.keras"</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="co"># model and predictions in one zip</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="fu">zip</span>(<span class="st">"model_and_predictions.zip"</span>, <span class="fu">c</span>(<span class="st">"model_lstm.keras"</span>, <span class="st">"predictions_lstm.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in system2(zip, args, input = input, invisible = TRUE): '"zip"' not
+found</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load model from file</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>loaded_model <span class="ot">&lt;-</span> <span class="fu">load_model_tf</span>(<span class="st">"model_lstm.keras"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We also want to combine our dataframes to make a singular pred_df, shown below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>combined_df <span class="ot">&lt;-</span> <span class="fu">merge</span>(pred_df, binary_pred_df, <span class="at">by =</span> <span class="st">".id"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(combined_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        .id mclass.pred bclass.pred
+1   url1002           0           1
+2   url1004           0           0
+3   url1005           2           1
+4   url1019           0           0
+5   url1022           2           1
+6   url1023           0           0
+7   url1024           0           0
+8   url1026           0           0
+9   url1034           0           0
+10  url1039           1           1
+11  url1041           2           1
+12  url1043           1           1
+13   url105           0           0
+14  url1052           1           0
+15  url1053           0           0
+16  url1055           1           0
+17  url1061           1           1
+18  url1070           3           0
+19  url1072           2           1
+20  url1074           3           1
+21  url1075           0           0
+22  url1077           2           1
+23  url1079           1           0
+24  url1081           2           1
+25  url1082           0           1
+26  url1088           0           0
+27  url1093           2           1
+28  url1099           2           1
+29    url11           0           0
+30  url1104           2           1
+31  url1105           0           0
+32  url1107           2           1
+33   url111           3           1
+34  url1110           1           1
+35  url1111           2           1
+36  url1113           2           1
+37  url1115           2           1
+38  url1120           0           0
+39  url1127           2           0
+40  url1131           1           1
+41  url1143           0           0
+42  url1146           2           1
+43  url1147           2           1
+44  url1150           2           1
+45  url1152           2           1
+46  url1156           0           0
+47  url1157           2           1
+48  url1159           0           0
+49   url116           0           0
+50  url1161           0           0
+51  url1164           0           0
+52  url1165           0           0
+53  url1167           3           0
+54  url1174           2           1
+55  url1176           0           1
+56  url1177           2           1
+57   url118           0           0
+58  url1181           0           0
+59  url1183           0           0
+60  url1189           3           0
+61   url119           2           1
+62  url1190           0           0
+63  url1191           3           0
+64  url1192           0           0
+65  url1196           0           1
+66  url1197           0           0
+67  url1204           3           0
+68  url1205           2           1
+69  url1206           0           0
+70  url1209           2           1
+71  url1211           1           1
+72  url1216           0           0
+73  url1218           0           0
+74  url1219           0           0
+75  url1222           0           0
+76  url1224           0           0
+77  url1229           0           0
+78  url1239           0           0
+79   url124           0           0
+80  url1241           0           1
+81  url1248           0           0
+82  url1249           0           1
+83  url1251           0           0
+84  url1254           3           1
+85  url1256           0           0
+86  url1262           2           1
+87  url1263           0           0
+88  url1264           0           0
+89  url1265           0           0
+90  url1267           0           0
+91  url1268           0           0
+92  url1270           2           1
+93  url1275           2           1
+94  url1279           2           1
+95  url1280           0           1
+96  url1282           0           1
+97   url129           3           1
+98  url1290           2           1
+99  url1292           0           1
+100 url1297           2           1
+101 url1301           0           0
+102 url1302           2           1
+103 url1304           0           0
+104 url1306           0           1
+105  url131           1           1
+106 url1310           0           0
+107 url1315           2           1
+108 url1317           0           1
+109 url1320           0           1
+110 url1324           0           0
+111 url1326           1           1
+112 url1327           2           1
+113 url1329           0           0
+114  url133           0           0
+115  url134           0           0
+116 url1341           2           0
+117 url1344           0           1
+118 url1349           0           0
+119 url1351           0           0
+120 url1352           1           1
+121  url136           0           1
+122 url1360           0           0
+123 url1361           0           0
+124 url1368           0           1
+125 url1370           0           0
+126 url1371           0           0
+127 url1373           0           0
+128 url1375           0           0
+129 url1377           3           0
+130 url1386           3           0
+131 url1392           1           1
+132 url1393           1           1
+133 url1396           0           0
+134 url1399           1           1
+135 url1404           2           1
+136 url1415           0           0
+137 url1417           0           0
+138 url1426           2           0
+139 url1430           2           1
+140 url1432           3           0
+141 url1435           2           1
+142 url1436           0           0
+143 url1440           0           0
+144 url1443           0           1
+145 url1444           0           1
+146 url1445           2           0
+147 url1446           0           0
+148 url1451           0           0
+149 url1455           0           0
+150 url1457           0           0
+151 url1464           0           0
+152 url1465           0           0
+153 url1467           2           1
+154 url1472           0           0
+155 url1474           0           0
+156 url1476           0           0
+157 url1484           0           0
+158 url1488           0           1
+159 url1490           0           0
+160 url1492           0           0
+161 url1494           0           0
+162 url1496           2           1
+163 url1497           2           1
+164 url1498           2           1
+165 url1499           3           1
+166 url1507           2           1
+167 url1508           2           1
+168 url1510           2           1
+169 url1513           2           0
+170 url1515           0           1
+171  url152           1           1
+172 url1521           0           0
+173 url1522           0           0
+174 url1525           1           1
+175 url1528           0           0
+176  url153           1           1
+177 url1534           0           0
+178 url1535           1           0
+179 url1536           0           1
+180 url1541           0           0
+181 url1546           0           0
+182 url1548           0           0
+183 url1550           3           1
+184 url1552           0           0
+185 url1559           0           0
+186 url1562           0           0
+187 url1563           0           0
+188 url1564           0           0
+189 url1565           0           0
+190 url1571           2           1
+191 url1575           0           0
+192 url1578           0           0
+193  url158           0           0
+194 url1580           0           0
+195 url1583           3           1
+196 url1584           3           1
+197  url159           0           0
+198 url1593           0           0
+199 url1594           0           1
+200 url1595           3           1
+201 url1596           0           0
+202   url16           0           0
+203  url160           0           1
+204 url1601           1           1
+205 url1609           2           1
+206  url161           0           1
+207 url1612           0           0
+208 url1614           0           0
+209  url162           0           0
+210 url1620           0           0
+211 url1628           1           1
+212 url1629           0           0
+213  url163           3           1
+214 url1631           1           1
+215 url1633           1           1
+216 url1635           1           1
+217 url1641           0           1
+218 url1642           0           0
+219 url1643           0           0
+220 url1655           0           0
+221 url1658           0           0
+222 url1659           3           1
+223  url166           0           0
+224 url1665           3           1
+225  url167           0           0
+226 url1675           0           0
+227 url1682           2           1
+228 url1686           0           0
+229  url169           0           1
+230 url1691           1           1
+231 url1697           0           1
+232 url1702           2           1
+233 url1703           2           1
+234 url1707           2           1
+235 url1714           0           0
+236 url1718           1           0
+237 url1722           0           0
+238 url1723           0           0
+239 url1724           0           0
+240 url1725           0           0
+241  url173           2           1
+242 url1730           3           1
+243 url1735           0           0
+244 url1736           0           0
+245 url1744           2           1
+246 url1745           3           1
+247 url1746           2           1
+248 url1751           1           1
+249 url1752           3           1
+250 url1755           3           1
+251 url1756           1           1
+252 url1757           0           1
+253 url1761           2           1
+254 url1766           0           1
+255 url1768           2           1
+256 url1774           0           0
+257 url1776           0           0
+258 url1781           0           1
+259 url1784           2           1
+260 url1786           1           1
+261 url1791           0           1
+262 url1792           0           1
+263 url1793           0           0
+264 url1796           0           1
+265 url1800           0           0
+266 url1805           0           0
+267 url1807           0           0
+268  url181           0           1
+269 url1814           0           0
+270 url1816           2           1
+271  url182           0           0
+272 url1822           0           0
+273 url1833           0           1
+274 url1837           0           1
+275  url184           0           1
+276 url1840           0           0
+277 url1841           0           0
+278 url1842           0           0
+279 url1846           0           0
+280 url1851           3           0
+281 url1852           0           0
+282 url1855           3           1
+283  url186           2           1
+284 url1861           0           0
+285 url1863           3           1
+286 url1864           3           1
+287 url1868           0           0
+288 url1871           2           0
+289 url1872           0           0
+290 url1873           0           0
+291 url1874           0           0
+292 url1879           2           1
+293 url1882           0           0
+294 url1883           0           0
+295 url1888           2           1
+296  url189           2           1
+297 url1892           0           0
+298 url1893           2           1
+299 url1894           2           1
+300 url1897           2           1
+301 url1898           0           0
+302 url1899           0           1
+303  url190           0           0
+304 url1900           0           0
+305 url1901           3           1
+306 url1905           3           1
+307 url1906           0           0
+308 url1908           2           1
+309 url1912           0           0
+310 url1916           1           1
+311 url1917           2           1
+312 url1918           0           1
+313 url1922           1           1
+314 url1925           3           0
+315 url1926           0           0
+316 url1928           2           1
+317 url1933           2           0
+318 url1936           2           0
+319 url1937           0           1
+320 url1940           1           1
+321 url1941           1           0
+322 url1943           2           1
+323 url1947           2           1
+324 url1949           0           0
+325  url195           3           1
+326 url1951           2           1
+327 url1955           1           1
+328 url1958           0           0
+329 url1959           0           0
+330  url196           3           1
+331 url1968           3           1
+332  url197           3           1
+333 url1970           1           1
+334 url1972           1           1
+335 url1974           2           1
+336 url1977           0           0
+337 url1979           3           1
+338  url198           3           1
+339 url1987           0           0
+340 url1993           2           1
+341 url1996           1           1
+342   url20           0           1
+343 url2001           0           1
+344 url2003           3           1
+345 url2005           3           1
+346 url2015           0           1
+347 url2020           0           0
+348 url2022           2           1
+349 url2026           3           1
+350 url2027           1           1
+351 url2029           0           0
+352 url2030           0           0
+353 url2032           0           0
+354 url2039           3           1
+355  url204           1           1
+356 url2042           0           0
+357 url2043           3           1
+358 url2049           2           1
+359 url2058           0           1
+360 url2060           0           0
+361 url2063           0           0
+362 url2064           1           1
+363 url2068           1           0
+364 url2069           3           1
+365 url2076           1           0
+366 url2078           2           1
+367 url2081           0           0
+368 url2086           1           1
+369 url2088           3           1
+370 url2089           2           1
+371 url2093           0           0
+372 url2097           2           1
+373 url2099           0           0
+374 url2102           2           0
+375 url2103           2           1
+376 url2105           0           0
+377 url2108           0           0
+378 url2113           0           1
+379 url2114           1           1
+380 url2116           0           0
+381 url2118           2           1
+382 url2121           0           0
+383 url2123           2           1
+384 url2128           0           0
+385 url2132           0           0
+386 url2134           0           0
+387 url2143           0           1
+388 url2145           1           1
+389 url2148           3           1
+390 url2149           0           0
+391 url2153           0           0
+392 url2154           0           0
+393  url216           0           0
+394 url2160           2           1
+395 url2163           2           1
+396 url2164           0           0
+397 url2167           0           0
+398  url217           2           1
+399 url2170           0           0
+400 url2171           3           1
+401 url2173           0           0
+402 url2174           0           0
+403 url2176           0           0
+404 url2178           0           0
+405  url218           0           1
+406 url2181           0           0
+407 url2184           0           0
+408  url219           2           1
+409 url2192           0           0
+410 url2193           0           0
+411 url2194           0           0
+412 url2196           2           0
+413 url2197           0           1
+414 url2198           3           1
+415 url2205           3           1
+416 url2208           0           0
+417 url2211           2           1
+418 url2212           2           1
+419 url2213           0           1
+420 url2215           0           0
+421 url2220           3           1
+422 url2221           3           1
+423 url2223           0           0
+424 url2224           0           1
+425 url2226           2           1
+426 url2228           2           0
+427 url2229           0           1
+428 url2231           3           1
+429 url2234           0           0
+430  url224           3           0
+431 url2240           0           0
+432 url2241           3           1
+433 url2249           2           1
+434  url225           3           1
+435 url2252           0           0
+436  url227           0           0
+437 url2273           0           0
+438 url2274           0           0
+439 url2276           0           0
+440 url2278           1           1
+441 url2280           0           0
+442 url2283           0           0
+443 url2284           0           0
+444 url2289           1           1
+445  url229           3           1
+446 url2291           0           0
+447 url2297           2           1
+448 url2299           2           0
+449   url23           0           0
+450 url2300           1           1
+451 url2304           0           0
+452 url2305           1           1
+453 url2307           1           1
+454 url2308           0           0
+455 url2309           0           0
+456 url2311           1           1
+457 url2317           0           0
+458 url2320           0           0
+459 url2322           2           1
+460 url2324           0           0
+461 url2325           0           0
+462 url2327           2           1
+463 url2329           3           0
+464 url2339           0           1
+465  url234           1           1
+466 url2340           0           1
+467 url2341           0           0
+468 url2343           0           0
+469 url2344           0           1
+470 url2345           1           1
+471 url2351           1           1
+472 url2353           1           1
+473 url2363           0           0
+474 url2368           3           1
+475 url2370           0           0
+476 url2371           0           0
+477 url2375           3           1
+478 url2376           3           1
+479  url238           3           1
+480 url2381           0           0
+481 url2383           0           0
+482 url2384           0           0
+483 url2386           0           0
+484 url2388           0           0
+485 url2389           2           0
+486  url239           3           1
+487 url2390           3           1
+488 url2393           0           0
+489 url2396           0           0
+490 url2398           0           0
+491 url2399           0           0
+492 url2401           3           1
+493 url2404           0           0
+494 url2407           0           0
+495 url2412           0           1
+496 url2428           1           1
+497 url2431           3           1
+498 url2436           0           0
+499 url2437           0           0
+500 url2442           3           0
+501 url2444           3           1
+502 url2447           0           0
+503 url2450           2           1
+504 url2451           3           1
+505 url2452           2           0
+506 url2453           0           0
+507 url2456           0           0
+508 url2457           3           0
+509 url2459           0           0
+510 url2460           3           1
+511 url2462           0           0
+512 url2463           1           1
+513 url2467           0           0
+514 url2475           0           0
+515 url2477           0           0
+516 url2479           0           1
+517 url2481           0           0
+518 url2483           2           1
+519 url2484           0           0
+520 url2486           2           1
+521 url2498           2           1
+522   url25           3           0
+523 url2504           3           1
+524 url2507           0           0
+525  url251           0           0
+526 url2514           0           0
+527 url2515           2           0
+528 url2517           0           0
+529 url2524           3           1
+530 url2526           1           0
+531 url2528           0           1
+532  url253           0           0
+533 url2535           2           1
+534  url254           0           0
+535 url2540           0           0
+536 url2543           0           1
+537 url2547           3           1
+538 url2550           0           0
+539 url2552           0           0
+540 url2560           3           0
+541 url2561           0           0
+542 url2564           0           1
+543  url257           0           0
+544 url2579           0           0
+545 url2585           0           0
+546 url2586           2           0
+547 url2587           0           0
+548 url2594           0           0
+549 url2597           3           1
+550  url261           0           0
+551 url2611           0           0
+552 url2613           0           0
+553 url2616           0           0
+554  url262           0           0
+555 url2621           0           0
+556 url2623           0           0
+557 url2626           0           0
+558  url263           3           1
+559 url2631           0           0
+560 url2636           0           0
+561 url2642           1           1
+562 url2645           0           0
+563 url2646           0           0
+564 url2651           2           1
+565 url2663           0           0
+566 url2664           0           1
+567 url2669           0           0
+568 url2670           0           0
+569 url2673           0           0
+570 url2677           0           1
+571 url2678           0           0
+572 url2679           0           0
+573 url2680           2           1
+574 url2681           2           1
+575 url2684           0           0
+576 url2691           0           0
+577 url2694           2           1
+578 url2695           3           1
+579 url2699           0           0
+580   url27           2           1
+581  url270           0           1
+582 url2701           0           0
+583 url2708           2           1
+584 url2709           0           0
+585 url2720           2           0
+586 url2727           0           0
+587 url2728           2           1
+588 url2731           0           0
+589 url2734           2           1
+590 url2737           0           0
+591 url2742           2           1
+592 url2746           2           1
+593  url275           0           0
+594 url2751           0           0
+595 url2752           0           0
+596 url2754           0           0
+597 url2761           3           1
+598 url2762           0           0
+599 url2764           0           0
+600 url2765           0           1
+601  url277           0           0
+602 url2770           2           1
+603 url2776           0           0
+604 url2781           0           0
+605 url2791           1           1
+606 url2798           0           0
+607  url280           1           1
+608 url2802           2           1
+609 url2806           0           0
+610 url2811           2           1
+611 url2813           2           1
+612 url2818           2           1
+613 url2821           0           0
+614 url2827           3           1
+615 url2831           0           0
+616 url2835           0           0
+617  url284           3           1
+618 url2843           3           1
+619 url2847           3           1
+620 url2848           1           1
+621  url285           0           0
+622 url2850           0           0
+623 url2854           3           1
+624 url2855           2           1
+625  url286           2           1
+626 url2860           0           0
+627 url2863           0           1
+628 url2866           0           0
+629 url2867           3           1
+630 url2871           2           1
+631 url2873           2           1
+632 url2879           0           0
+633 url2883           2           1
+634 url2886           1           1
+635 url2888           0           0
+636  url289           3           1
+637 url2897           0           0
+638 url2900           2           1
+639 url2903           0           0
+640 url2906           0           0
+641  url291           0           1
+642 url2910           0           0
+643 url2912           3           1
+644 url2923           0           0
+645 url2924           0           0
+646 url2927           2           1
+647 url2935           1           1
+648 url2937           0           0
+649  url294           0           1
+650 url2951           3           1
+651 url2952           3           1
+652 url2955           2           1
+653 url2960           2           1
+654 url2961           3           1
+655 url2965           2           1
+656 url2970           2           1
+657 url2972           3           0
+658 url2979           0           0
+659 url2980           3           1
+660 url2985           2           1
+661  url299           0           0
+662 url2993           3           1
+663 url2994           0           0
+664 url2997           0           0
+665    url3           3           1
+666   url30           2           1
+667 url3002           1           1
+668 url3003           2           1
+669 url3004           2           1
+670 url3005           0           0
+671 url3006           0           0
+672 url3010           3           1
+673 url3011           0           1
+674 url3015           2           1
+675 url3019           0           0
+676  url302           2           1
+677 url3022           2           1
+678 url3025           1           1
+679 url3026           0           0
+680 url3027           0           0
+681 url3029           0           1
+682 url3031           0           0
+683 url3034           0           1
+684 url3035           0           0
+685 url3036           1           1
+686  url304           1           1
+687 url3041           0           0
+688 url3043           0           0
+689  url305           2           1
+690 url3053           0           0
+691 url3060           0           1
+692 url3061           0           0
+693 url3068           3           1
+694 url3070           2           1
+695 url3071           0           0
+696 url3077           0           0
+697  url308           0           0
+698 url3085           0           0
+699 url3087           0           0
+700 url3091           0           0
+701 url3093           0           0
+702 url3094           2           1
+703  url313           2           1
+704  url314           1           1
+705  url319           0           0
+706  url328           0           1
+707  url333           0           0
+708  url337           3           1
+709  url339           0           0
+710   url34           1           1
+711  url340           0           0
+712  url344           0           1
+713  url347           0           1
+714  url349           0           1
+715  url356           0           0
+716  url359           0           0
+717  url362           0           0
+718  url363           2           1
+719  url368           0           0
+720  url369           2           0
+721  url373           2           1
+722  url374           0           0
+723  url375           0           0
+724  url381           3           0
+725  url390           0           0
+726  url393           2           1
+727   url40           2           1
+728  url404           0           0
+729  url407           0           0
+730  url408           2           1
+731  url409           3           0
+732  url410           2           1
+733  url414           2           1
+734  url416           0           0
+735  url420           0           0
+736  url425           2           1
+737  url431           2           1
+738  url437           2           1
+739  url438           1           1
+740  url439           2           1
+741  url441           1           1
+742  url446           2           1
+743  url448           0           0
+744   url45           0           1
+745  url450           3           1
+746  url456           3           1
+747   url46           2           1
+748  url464           2           1
+749  url465           2           1
+750  url470           2           1
+751  url473           2           1
+752  url477           3           1
+753  url478           3           1
+754  url479           0           0
+755   url48           2           1
+756  url488           1           1
+757  url489           3           1
+758  url492           0           1
+759  url497           0           0
+760  url498           0           0
+761  url500           0           1
+762  url504           3           1
+763  url506           2           1
+764  url510           0           0
+765  url515           2           1
+766  url519           2           1
+767  url520           3           1
+768  url524           3           1
+769  url528           2           1
+770  url536           0           0
+771  url537           3           1
+772  url539           2           0
+773  url541           1           1
+774  url542           1           1
+775  url543           1           1
+776  url544           2           1
+777   url55           0           0
+778  url555           2           1
+779  url557           2           1
+780  url559           2           1
+781  url561           3           1
+782  url564           0           1
+783  url567           0           0
+784  url568           2           0
+785  url569           3           1
+786  url570           0           1
+787  url571           3           1
+788  url572           0           0
+789  url574           0           0
+790   url58           0           0
+791  url580           0           0
+792   url59           1           1
+793  url590           0           0
+794  url591           2           1
+795  url594           1           1
+796  url595           0           0
+797  url596           0           0
+798  url597           2           1
+799  url599           2           1
+800    url6           1           0
+801  url604           1           1
+802  url607           0           0
+803  url609           0           0
+804  url610           1           1
+805  url617           0           0
+806  url618           3           1
+807  url621           1           1
+808  url623           0           0
+809  url629           1           1
+810  url637           1           1
+811  url640           1           1
+812  url641           0           0
+813  url643           3           1
+814   url65           3           1
+815  url650           3           0
+816  url651           0           1
+817  url660           0           0
+818  url665           2           1
+819  url668           0           1
+820  url671           2           1
+821  url674           3           1
+822  url676           0           0
+823  url677           3           1
+824  url679           2           1
+825   url68           0           0
+826  url682           3           1
+827  url684           3           1
+828  url691           2           1
+829  url699           1           1
+830  url705           2           1
+831  url706           1           1
+832  url708           0           0
+833  url709           0           0
+834   url71           0           0
+835  url710           0           0
+836  url712           1           0
+837  url717           3           1
+838   url72           0           0
+839  url722           0           0
+840  url728           2           1
+841  url730           0           0
+842  url735           2           1
+843  url736           2           1
+844  url738           0           1
+845   url74           2           1
+846  url747           0           0
+847  url748           0           0
+848  url755           0           1
+849  url758           2           1
+850  url761           0           0
+851  url768           0           1
+852  url771           0           0
+853  url778           2           1
+854  url782           2           1
+855  url783           0           0
+856  url785           0           1
+857  url791           0           0
+858  url792           1           1
+859  url795           0           0
+860  url796           0           0
+861  url799           2           0
+862    url8           0           0
+863  url801           0           0
+864  url802           0           0
+865  url803           2           1
+866  url806           1           1
+867  url809           0           0
+868  url811           0           0
+869  url817           0           0
+870   url82           0           0
+871  url820           0           1
+872  url821           0           0
+873  url825           0           0
+874  url826           0           1
+875  url828           1           1
+876  url842           3           1
+877  url845           3           1
+878  url847           0           0
+879  url848           3           1
+880  url849           2           0
+881  url856           2           1
+882  url859           2           1
+883  url862           2           1
+884  url863           0           0
+885  url867           0           0
+886   url87           0           1
+887  url873           0           0
+888  url874           2           1
+889  url875           0           0
+890  url876           3           1
+891  url880           2           1
+892  url883           0           0
+893  url884           0           0
+894  url887           1           1
+895  url890           2           1
+896  url891           0           0
+897  url894           1           0
+898  url895           1           1
+899  url896           0           0
+900  url899           3           1
+901    url9           0           0
+902  url905           2           1
+903  url909           0           0
+904  url912           1           0
+905  url921           0           0
+906  url923           0           0
+907  url930           0           0
+908  url937           0           0
+909  url940           3           1
+910  url942           0           0
+911  url943           0           0
+912  url944           2           1
+913  url945           0           0
+914  url948           2           1
+915   url95           0           0
+916  url955           0           0
+917  url956           0           0
+918  url962           0           0
+919  url963           2           1
+920  url966           0           0
+921  url972           2           0
+922  url974           2           1
+923  url981           3           1
+924  url984           2           1
+925  url987           2           1
+926  url989           1           1
+927  url995           0           0
+928  url996           0           0
+929  url997           2           1</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
