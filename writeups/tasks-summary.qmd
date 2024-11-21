@@ -1,6 +1,6 @@
 ---
 title: "Summary of exploratory tasks"
-author: 'Reese Karo,...'
+author: 'Reese Karo, Johnson Leung, ...'
 date: today
 ---
 
@@ -9,6 +9,7 @@ date: today
 Does including header content improve predictions? Answer the question and provide quantitative evidence supporting your answer.
 
 ```{r}
+setwd('C:/Users/Johnson Leung/Documents/GitHub/module-2-group4')
 load('results/base_metrics.RData')
 load('results/headings_metrics.RData')
 base_metrics
