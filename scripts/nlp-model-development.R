@@ -58,11 +58,9 @@ test_text_preprocessed <- preprocess_layer(test_text) %>% as.array()
 
 # define NN architecture
 model <- keras_model_sequential() %>%
-  layer_dense(units = 128, activation = 'relu', input_shape = dim(train_text_preprocessed)[-1]) %>%
+  layer_dense(units = 512, activation = 'relu', input_shape = dim(train_text_preprocessed)[-1]) %>%
   layer_dropout(0.2) %>%
-  layer_dense(units = 64, activation = 'relu') %>% 
-  layer_dropout(0.2) %>% 
-  layer_dense(units = 32, activation = 'relu') %>% 
+  layer_dense(units = 256, activation = 'relu') %>% 
   layer_dropout(0.2) %>% 
   layer_dense(1) %>%
   layer_activation(activation = 'sigmoid')
