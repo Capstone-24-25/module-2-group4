@@ -1,7 +1,10 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'YOUR NAMES HERE'
+author: 'Johnson Leung, ...'
 date: today
+format:
+  html:
+    embed-resources: true
 ---
 
 ### Abstract
