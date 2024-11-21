@@ -6,34 +6,20 @@ date: today
 
 ### Abstract
 
-Provide a 3-5 sentence summary of your work on the primary task. Indicate what input data was used, what method was used for binary class predictions, what method was used for multiclass predictions, and what estimated accuracies were achieved.
-
-> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a two-layer neural network yielded an estimated 81.4% accuracy; for multiclass classification, a support vector machine gave 78% accuracy.*
+We aimed to predict the classification of claims based on text data. The data was preprocessed to remove unnecessary characters and tokenized into individual words. A binary class classification approach was employed using ___. A multi-class classification approach was employed using a deep learning model, achieving an accuracy of approximately 77% on the training data and 64% on the validation data.
 
 ### Preprocessing
 
-In one paragraph lay out your preprocessing pipeline. No need to provide exact step-by-step detail; just give an overview of the main components:
-
--   what text content was extracted from HTML
-
--   how text was cleaned
-
--   how cleaned text was represented quantitatively
-
 The preprocessing pipeline is as follows, a dataset containing the text of each website is passed into R, then the data was cleaned by removing punctuation, symbols and other special characters from the text. Then all words were converted to lower case and turn into tokens of one word each(or two words in the case for ngrams). The `bind_tf_idf()` function is applied to the data frame to get the tf_idf values for each word of each website. The data frame is then pivoted so that each unique word is a column and the document as rows. The resulting data frame has rows of documents and columns of words and cells of tf_idf values of each word for each website.
+
+The preprocessing pipleline was designed to clean and tokenize the text data for efficient input into the LSTM model for multi-class classification. The text data from the training and test sets were cleaned by removing HTML tags, extra whitespace, and trimming leading spaces. The text was then tokenized and padding was applied to ensure all sequneces had the same length. The text data was represented quantitatively through tokenized sequences, with each sequence padded to a fixed length of 200 words.
 
 ### Methods
 
-Describe your final predictive models. Include one paragraph with details on the binary classification approach, and one on the multiclass approach. Include for each:
-
--   what ML/statistical method was used
-
--   model specification and hyperparameter selection
-
--   training method
+The model used for multi-class classification was an LSTM (Long Short-Term Memory) neural network, which is particularly suited for text data due to its ability to capture long-term dependencies in sequences. The LSTM network was designed with an embedding layer with dimension 100, followed by an LSTM layer with 128 units to capture sequential dependencies, and a dense layer with 64 units for further processing. The final output layer used softmax activation to predict class probabilities, with key hyperparameters including a 0.2 dropout rate and L2 regularization with a factor of 0.01 to prevent overfitting. The model was trained for 10 epochs with a batch size of 64 uisng the Adam optimizer. Early stopping was also implemented to halt training if the validation loss did not improve after 3 epochs, which also helped with overfitting and ensuring the model generalized well.
 
 ### Results
 
-Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]
+The model for multi-class classification showed strong performance, with a training accuracy of around 77% and a validation accuracy of 64%. While the model performed well on the training set, the gap in performance between the training and validation sets suggests that there is room for improvement. In the future, we can ensure the model generalizes beyyer to new data. * COMING BACK TO ADD ACCURACY, SENSITIVITY, AND SPECIFICITY *
 
 [^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
