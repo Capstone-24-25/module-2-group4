@@ -20,6 +20,8 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
+The preprocessing pipeline is as follows, a dataset containing the text of each website is passed into R, then the data was cleaned by removing punctuation, symbols and other special characters from the text. Then all words were converted to lower case and turn into tokens of one word each(or two words in the case for ngrams). The `bind_tf_idf()` function is applied to the data frame to get the tf_idf values for each word of each website. The data frame is then pivoted so that each unique word is a column and the document as rows. The resulting data frame has rows of documents and columns of words and cells of tf_idf values of each word for each website.
+
 ### Methods
 
 Describe your final predictive models. Include one paragraph with details on the binary classification approach, and one on the multiclass approach. Include for each:
