@@ -20,6 +20,6 @@ The model used for multi-class classification was an LSTM (Long Short-Term Memor
 
 ### Results
 
-The model for multi-class classification showed strong performance, with a training accuracy of around 77% and a validation accuracy of 64%. While the model performed well on the training set, the gap in performance between the training and validation sets suggests that there is room for improvement. In the future, we can ensure the model generalizes beyyer to new data. * COMING BACK TO ADD ACCURACY, SENSITIVITY, AND SPECIFICITY *
+The model for multi-class classification showed strong performance, with a training accuracy of around 77% and a validation accuracy of 64%. While the model performed well on the training set, the gap in performance between the training and validation sets suggests that there is room for improvement. In the future, we can ensure the model generalizes beyyer to new data. As discussed before, accuracy was around 77%, however after taking a look at the confusion matrix, we saw that our model was only accurately predicting N/A: No relevant content and not the other factors. Due to this, sensitivity and specificity values were NA.
 
 [^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
