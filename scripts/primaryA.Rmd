@@ -1,0 +1,155 @@
+---
+title: "PrimaryA"
+author: "Wentao(Eric) Zhang"
+date: "2024-11-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+# Primary A
+# Predictive model for binary classification
+
+# Load libraries
+library(keras)
+library(dplyr)
+library(tidytext)
+library(tidyr)
+library(tensorflow)
+
+```
+
+```{r}
+# Load data
+load("/Users/wentaozhang/Documents/GitHub/module-2-group4/data/claims-clean-example.RData")
+load("/Users/wentaozhang/Documents/GitHub/module-2-group4/data/claims-test.RData")
+```
+
+```{r}
+# Factor labels to integers
+claims_clean$bclass <- as.numeric(as.factor(claims_clean$bclass)) - 1  # Convert to binary (0, 1)
+
+```
+
+```{r}
+# Text preprocessing
+# Preprocess training data (claims_clean)
+claims_clean$text_clean <- claims_clean$text_tmp %>%
+  gsub("<.*?>", " ", .) %>%        # Remove HTML tags
+  gsub("\\s+", " ", .) %>%         # Remove extra whitespace
+  trimws()                         # Trim leading/trailing spaces
+```
+
+```{r}
+# Preprocess test data (claims_test)
+claims_test$text_clean <- claims_test$text_tmp %>%
+  gsub("<.*?>", " ", .) %>%
+  gsub("\\s+", " ", .) %>%
+  trimws()
+```
+
+```{r}
+# Create and fit tokenizer
+tokenizer <- text_tokenizer(num_words = 10000)  # Adjust vocab size as needed
+tokenizer %>% fit_text_tokenizer(claims_clean$text_clean)
+```
+
+```{r}
+vocab_size <- length(tokenizer$word_index) + 1
+
+# Tokenize train and test text
+train_sequences <- texts_to_sequences(tokenizer, claims_clean$text_clean)
+test_sequences <- texts_to_sequences(tokenizer, claims_test$text_clean)
+```
+
+```{r}
+# Pad sequences to the same length
+maxlen <- 200  # Fixed sequence length
+train_padded <- pad_sequences(train_sequences, maxlen = maxlen)
+test_padded <- pad_sequences(test_sequences, maxlen = maxlen)
+```
+
+```{r}
+# Convert binary class labels to categorical
+train_labels_binary <- to_categorical(claims_clean$bclass)
+```
+
+```{r}
+# Build LSTM model for binary classification
+model_binary <- keras_model_sequential() %>%
+  layer_embedding(input_dim = vocab_size, output_dim = 100, input_length = maxlen) %>%
+  layer_lstm(units = 128, 
+             kernel_regularizer = regularizer_l2(0.01),
+             dropout = 0.2, 
+             recurrent_dropout = 0.2) %>%
+  layer_dense(units = 64, activation = 'relu',
+              kernel_regularizer = regularizer_l2(0.01)) %>%
+  layer_dense(units = 2, activation = 'softmax')  # Binary classification (2 classes)
+
+```
+
+```{r}
+
+# Compile model
+model_binary %>% compile(
+  loss = 'binary_crossentropy', 
+  optimizer = optimizer_adam(), 
+  metrics = c('accuracy')
+)
+```
+
+```{r}
+# Fit model and capture history
+history_binary <- model_binary %>% fit(
+  train_padded, 
+  train_labels_binary,  # One-hot encoded binary labels
+  validation_split = 0.2, 
+  epochs = 10, 
+  batch_size = 64, 
+  callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 3))
+)
+```
+
+```{r}
+# Make predictions on the test set
+binary_test_predictions <- model_binary %>% predict(test_padded)
+
+# Convert predicted probabilities to binary labels
+binary_predicted_classes <- apply(binary_test_predictions, 1, which.max) - 1  # Convert to binary (0, 1)
+```
+
+```{r}
+# Output data frame
+binary_pred_df <- data.frame(.id = claims_test$.id, bclass.pred = binary_predicted_classes)
+head(binary_pred_df)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=
