@@ -27,6 +27,7 @@ source(paste(url, 'projection-functions.R', sep = ''))
 ```
 
 ```{r}
+setwd("C:/Users/Johnson Leung/Documents/GitHub/module-2-group4")
 load('data/claims-clean-task-1.RData')
 ```
 
@@ -84,6 +85,7 @@ nlp_fn <- function(parse_data.out){
 
 ```{r}
 #Text only
+setwd("C:/Users/Johnson Leung/Documents/GitHub/module-2-group4")
 
 #tokenization
 claims_tfidf <- claims_clean %>% 
@@ -122,37 +124,37 @@ test_labels <- testing(split) %>%
   select(.id, bclass, mclass)
 
 #projection
-proj_out <- projection_fn(.dtm = train_dtm, 
+proj_out = projection_fn(.dtm = train_dtm, 
                           .prop = 0.7)
-train_dtm_proj <- proj_out$data
+train_dtm_proj = proj_out$data
 
 #regression
-train <- train_labels %>% 
+train = train_labels %>% 
   transmute(bclass = factor(bclass)) %>% 
   bind_cols(train_dtm_proj)
 
-fit <- glm(bclass ~ ., 
+fit = glm(bclass ~ ., 
            data = train,
            family = binomial)
 
-test_proj <- reproject_fn(.dtm = test_dtm, 
+test_proj = reproject_fn(.dtm = test_dtm, 
                           proj_out)
 
-save(test_proj, file = '.../results/reproject_text.RData')
+save(test_proj, file = 'results/reproject_text.RData')
 
 #get predictions
-preds <- predict(fit,
+preds = predict(fit,
                  newdata = as.data.frame(test_proj),
                  type = 'response')
 
-pred_df <- test_labels %>% 
+pred_df = test_labels %>% 
   transmute(bclass = factor(bclass)) %>% 
   bind_cols(pred = as.numeric(preds)) %>% 
   mutate(bclass.pred = factor(pred > 0.5,
                               labels = levels(bclass)))
 
 #save pred_df
-base_pred_df <- pred_df
+base_pred_df = pred_df
 
 #metrics
 class_metrics = metric_set(sensitivity,
@@ -160,19 +162,22 @@ class_metrics = metric_set(sensitivity,
                            accuracy,
                            roc_auc)
 
-metrics <- pred_df %>% 
+metrics = pred_df %>% 
   class_metrics(truth = bclass,
                 estimate = bclass.pred,
                 pred,
                 event_level = 'second')
 
 #save metrics
-base_metrics <- metrics
-save(base_metrics, file = 'results/base-logreg-model/base_metrics.RData')
+base_metrics = metrics
+save(base_metrics, file = 'results/base_metrics.RData')
+
+base_metrics
 ```
 
 ```{r}
 #text & heading
+setwd("C:/Users/Johnson Leung/Documents/GitHub/module-2-group4")
 
 text_heading_fn <- function(.html){
   read_html(.html) %>%
@@ -260,6 +265,8 @@ fit <- glm(bclass ~ .,
 test_proj <- reproject_fn(.dtm = test_dtm, 
                           proj_out)
 
+save(test_proj, file = 'results/reproject_heading.RData')
+
 #get predictions
 preds <- predict(fit,
                  newdata = as.data.frame(test_proj),
@@ -288,5 +295,7 @@ metrics <- pred_df %>%
 
 #save metrics
 headings_metrics <- metrics
-save(headings_metrics, file = '../results/headings_metrics.RData')
+save(headings_metrics, file = 'results/headings_metrics.RData')
+
+headings_metrics
 ```
