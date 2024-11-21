@@ -19,7 +19,7 @@ Including header content does not improve the performance of the Logistic Regres
 
 ### Bigrams
 
-Do bigrams capture additional information relevant to the classification of interest? Answer the question, **briefly** describe what analysis you conducted to arrive at your answer, and provide quantitative evidence supporting your answer.
+The bigram tokenization coupled with log-odds predictions does not significantly improve the classification accuracy of the logistic regression model. To evaluate this, the data was tokenized into bigrams, and their TF-IDF scores were computed. Principal Component Analysis (PCA) was applied to reduce dimensionality, capturing the most important features of the bigrams. A logistic regression model was first trained using log-odds predictions derived from word-tokenized data. Then, the log-odds were augmented with principal components from the bigram-tokenized data to train a second logistic regression model. Comparing the performance metrics of both models, such as accuracy, showed minimal to no improvement, suggesting that the bigrams did not capture additional information relevant to the classification of interest.
 
 ### Neural Net
 

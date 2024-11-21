@@ -24,11 +24,9 @@ numeric_bigram_token <- tokens_clean_bigram |>
 sparse_bigram <- as(numeric_bigram_token, "dgCMatrix")
 pca_sparse <- irlba(sparse_bigram, nv = 10) # running PCA
 
-# Extract principal components
-pc_data <- as.data.frame(pca_sparse$u) # $u for the u in SVD which is the PC's
-
 # Ensure the response variable is a factor for classification
-pc_data$bclass <- as.factor(pc_data$bclass)
+pc_data <- as.data.frame(pca_sparse$u) # $u for the u in SVD which is the PC's
+pc_data$bclass <- tokens_clean_bigram$bclass # Add bclass from original data
 
 # Create a logistic regression model for bigrams only
 logistic_pca <- glm(bclass ~ ., data = pc_data, family = binomial)
@@ -38,33 +36,32 @@ log_odds <- predict(logistic_pca, type = "link") # ensure log odds are used
 
 # Combine predicted probabilities with bigram PCs
 pca_logit_combo <- pc_data |>
-  bind_cols(log_odds)
-
-# Ensure the response variable is a factor for classification in combined data
-pca_logit_combo$bclass <- as.factor(pca_logit_combo$bclass)
+  bind_cols(log_odds = log_odds) # Name the column appropriately
 
 # Define a second logistic regression model
-second_logistic_model <- logistic_reg(mode = "classification") |> 
-  set_engine("glmnet")
+second_logistic <- glm(bclass ~ ., data = pca_logit_combo, family = binomial)
 
 # Evaluate the second model on testing data
-second_pred <- predict(second_logistic_model, pca_logit_combo, type = "prob") |> 
+second_pred <- predict(second_logistic, pca_logit_combo, type = "response") |> 
   bind_cols(pca_logit_combo)
 
+# Ensure predictions are properly formatted
+second_pred$.pred_class <- ifelse(second_pred$.pred > 0.5, 1, 0) # Example threshold
+
 # Metrics for evaluation
-metrics <- metric_set(roc_auc, accuracy, precision, sensitivity, specificity)
+metrics <- metric_set(roc_auc, yardstick::accuracy, precision, sensitivity, specificity)
 second_eval_metrics <- metrics(second_pred, truth = bclass, estimate = .pred_class)
 
 # Print metrics for the second model
 print(second_eval_metrics)
 
 # Predict probabilities for test set
-pc_predictions <- predict(logistic_bigram_pca, newdata = claims_test, type = "response")
-combined_predictions <- predict(logistic_combined, newdata = claims_test, type = "response")
+pc_predictions <- predict(logistic_pca, newdata = claims_test, type = "response")
+combined_predictions <- predict(second_logistic, newdata = claims_test, type = "response")
 
 # Evaluate accuracy
-bigram_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = pc_predictions)
-combined_accuracy <- accuracy_vec(truth = claims_test$bclass, estimate = combined_predictions)
+bigram_accuracy <- yardstick::accuracy_vec(truth = claims_test$bclass, estimate = ifelse(pc_predictions > 0.5, 1, 0))
+combined_accuracy <- yardstick::accuracy_vec(truth = claims_test$bclass, estimate = ifelse(combined_predictions > 0.5, 1, 0))
 
 # Output results
 cat("Accuracy with Bigram PCA:", bigram_accuracy, "\n")
